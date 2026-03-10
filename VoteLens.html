@@ -38,6 +38,68 @@
         .glass-effect { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
         .hero-gradient { background: linear-gradient(135deg, #0d9488 0%, #10b981 100%); }
     </style>
+
+
+<style>
+/* ====== VoteLens A11y Widget (CSS) ====== */
+:root{ --vl-scale:1 }
+html{ font-size: calc(16px * var(--vl-scale)); }
+
+/* FAB (botón flotante) */
+.vl-a11y-fab{
+  position:fixed; right:16px; bottom:16px; width:56px; height:56px; border-radius:50%;
+  background:#fff; color:#111; border:0; box-shadow:0 10px 25px rgba(0,0,0,.15);
+  display:grid; place-items:center; cursor:pointer; z-index:9999;
+}
+.vl-a11y-fab:hover{ transform:scale(1.05) }
+.vl-a11y-fab:focus-visible{ outline:3px solid #2563eb; outline-offset:2px }
+
+/* Panel */
+.vl-a11y-panel{
+  position:fixed; right:16px; bottom:84px; width:320px; max-width:calc(100% - 32px);
+  background:#fff; color:#111; border-radius:12px; box-shadow:0 24px 60px rgba(0,0,0,.2);
+  padding:12px 16px; z-index:9999;
+}
+.vl-a11y-header{ display:flex; align-items:center; justify-content:space-between; gap:8px }
+.vl-a11y-close{ background:transparent; border:0; font-size:22px; cursor:pointer }
+.vl-a11y-group{ margin-top:12px }
+.vl-a11y-row{ display:flex; gap:8px; flex-wrap:wrap }
+.vl-a11y-btn{
+  padding:8px 12px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:8px; cursor:pointer
+}
+.vl-a11y-btn:focus-visible{ outline:3px solid #2563eb; outline-offset:2px }
+.vl-a11y-switch{ display:flex; align-items:center; gap:8px; margin:6px 0 }
+
+/* Estados globales */
+html.vl-contrast{ color-scheme:dark; background:#0a0a0a }
+html.vl-contrast body{ background:#0a0a0a; color:#fff }
+html.vl-contrast a{ color:#93c5fd }
+
+html.vl-contrast-neg{ filter: invert(1) hue-rotate(180deg) } /* contraste negativo (invertido) */
+html.vl-gray{ filter: grayscale(1) }
+html.vl-underline a, html.vl-underline [role="link"]{
+  text-decoration: underline !important; text-underline-offset:.2em; text-decoration-thickness:2px;
+}
+
+/* Fuente legible (si el sistema la tiene instalada). Puedes enlazar tu .woff si la usas. */
+@font-face{
+  font-family:"AtkinsonHyperlegible";
+  src: local("Atkinson Hyperlegible"), local("AtkinsonHyperlegible");
+  font-display: swap;
+}
+html.vl-readable{
+  font-family:"AtkinsonHyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* Accesibilidad del foco global (visible) */
+*:focus-visible{ outline:3px solid #f59e0b; outline-offset:2px }
+
+/* Respeto a reduce motion */
+@media (prefers-reduced-motion: reduce){
+  .vl-a11y-fab, .vl-a11y-panel, .vl-a11y-btn{ transition:none !important; animation:none !important }
+}
+</style>
+        
 </head>
 <body class="bg-background-light text-slate-900 font-display">
 <!-- Top Navigation Bar -->
@@ -348,4 +410,124 @@
 </button>
 </a>
 </div>
+<!-- ====== VoteLens A11y Widget (HTML) ====== -->
+<button id="vlA11yBtn" class="vl-a11y-fab" aria-controls="vlA11yPanel" aria-expanded="false" aria-label="Accesibilidad">
+  <!-- Ícono accesibilidad (SVG simple) -->
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" aria-hidden="true" viewBox="0 0 24 24">
+    <path d="M12 2a2 2 0 1 1 .001 3.999A2 2 0 0 1 12 2zm6 6H6a1 1 0 1 0 0 2h4v10a1 1 0 0 0 2 0V10h4a1 1 0 1 0 0-2z"/>
+  </svg>
+</button>
+
+<aside id="vlA11yPanel" class="vl-a11y-panel" role="dialog" aria-modal="true" aria-labelledby="vlA11yTitle" hidden>
+  <header class="vl-a11y-header">
+    <h2 id="vlA11yTitle" tabindex="-1">Accesibilidad</h2>
+    <button id="vlA11yClose" class="vl-a11y-close" aria-label="Cerrar">×</button>
+  </header>
+
+  <div class="vl-a11y-group" role="group" aria-labelledby="vlFontTitle">
+    <h3 id="vlFontTitle">Tamaño de texto</h3>
+    <div class="vl-a11y-row">
+      <button class="vl-a11y-btn" data-action="dec" aria-label="Disminuir tamaño de texto">A-</button>
+      <button class="vl-a11y-btn" data-action="reset" aria-label="Restablecer tamaño de texto">A</button>
+      <button class="vl-a11y-btn" data-action="inc" aria-label="Aumentar tamaño de texto">A+</button>
+    </div>
+  </div>
+
+  <div class="vl-a11y-group" role="group" aria-labelledby="vlVisTitle">
+    <h3 id="vlVisTitle">Visual</h3>
+    <label class="vl-a11y-switch"><input type="checkbox" id="vlContrast"> Alto contraste</label>
+    <label class="vl-a11y-switch"><input type="checkbox" id="vlContrastNeg"> Contraste negativo</label>
+    <label class="vl-a11y-switch"><input type="checkbox" id="vlGray"> Escala de grises</label>
+    <label class="vl-a11y-switch"><input type="checkbox" id="vlUnderline"> Subrayar enlaces</label>
+    <label class="vl-a11y-switch"><input type="checkbox" id="vlReadable"> Fuente legible</label>
+  </div>
+
+  <div class="vl-a11y-group" role="group" aria-labelledby="vlReadTitle">
+    <h3 id="vlReadTitle">Lectura</h3>
+    <div class="vl-a11y-row">
+      <button id="vlReadSel" class="vl-a11y-btn" aria-label="Leer el texto seleccionado">Leer selección</button>
+      <button id="vlReadStop" class="vl-a11y-btn" aria-label="Detener lectura">Detener</button>
+    </div>
+    <small>Selecciona un texto en la página y pulsa “Leer selección”.</small>
+  </div>
+</aside>
+<script>
+/* ====== VoteLens A11y Widget (JS) ====== */
+(function(){
+  const d=document, html=d.documentElement;
+  const BTN=d.getElementById('vlA11yBtn');
+  const PANEL=d.getElementById('vlA11yPanel');
+  const CLOSE=d.getElementById('vlA11yClose');
+  const BTNS=[...d.querySelectorAll('.vl-a11y-btn[data-action]')];
+
+  const chkContrast   = d.getElementById('vlContrast');
+  const chkContrastNg = d.getElementById('vlContrastNeg');
+  const chkGray       = d.getElementById('vlGray');
+  const chkUnderline  = d.getElementById('vlUnderline');
+  const chkReadable   = d.getElementById('vlReadable');
+
+  const readSel  = d.getElementById('vlReadSel');
+  const readStop = d.getElementById('vlReadStop');
+
+  const SKEY='vl_a11y_state_v1';
+  let state = {
+    scale:1, contrast:false, contrastNeg:false, gray:false, underline:false, readable:false,
+    ...JSON.parse(localStorage.getItem(SKEY) || '{}')
+  };
+
+  function apply(save){
+    html.style.setProperty('--vl-scale', state.scale);
+    html.classList.toggle('vl-contrast', !!state.contrast);
+    html.classList.toggle('vl-contrast-neg', !!state.contrastNeg);
+    html.classList.toggle('vl-gray', !!state.gray);
+    html.classList.toggle('vl-underline', !!state.underline);
+    html.classList.toggle('vl-readable', !!state.readable);
+
+    chkContrast.checked   = !!state.contrast;
+    chkContrastNg.checked = !!state.contrastNeg;
+    chkGray.checked       = !!state.gray;
+    chkUnderline.checked  = !!state.underline;
+    chkReadable.checked   = !!state.readable;
+
+    if(save) localStorage.setItem(SKEY, JSON.stringify(state));
+  }
+  apply(false);
+
+  function open(){ PANEL.hidden=false; BTN.setAttribute('aria-expanded','true'); d.getElementById('vlA11yTitle').focus(); }
+  function close(){ PANEL.hidden=true; BTN.setAttribute('aria-expanded','false'); BTN.focus(); }
+
+  BTN.addEventListener('click', ()=> PANEL.hidden ? open() : close());
+  BTN.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); BTN.click(); }});
+  CLOSE.addEventListener('click', close);
+  PANEL.addEventListener('keydown', e=>{ if(e.key==='Escape'){ e.preventDefault(); close(); }});
+
+  // Tamaño de texto
+  BTNS.forEach(b=>b.addEventListener('click', ()=>{
+    const a=b.dataset.action;
+    if(a==='inc') state.scale = Math.min(1.7, +(state.scale + 0.1).toFixed(2));
+    if(a==='dec') state.scale = Math.max(0.8, +(state.scale - 0.1).toFixed(2));
+    if(a==='reset') state.scale = 1;
+    apply(true);
+  }));
+
+  // Toggles
+  chkContrast.addEventListener('change',   e=>{ state.contrast   = e.target.checked; apply(true); });
+  chkContrastNg.addEventListener('change', e=>{ state.contrastNeg= e.target.checked; apply(true); });
+  chkGray.addEventListener('change',       e=>{ state.gray       = e.target.checked; apply(true); });
+  chkUnderline.addEventListener('change',  e=>{ state.underline  = e.target.checked; apply(true); });
+  chkReadable.addEventListener('change',   e=>{ state.readable   = e.target.checked; apply(true); });
+
+  // Lectura en voz (nativo)
+  function speakSelection(){
+    const txt = String(window.getSelection()).trim();
+    if(!txt){ alert('Selecciona un texto de la página para leer.'); return; }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(txt);
+    u.lang = 'es-PE'; // ajusta al dialecto deseado
+    window.speechSynthesis.speak(u);
+  }
+  readSel.addEventListener('click', speakSelection);
+  readStop.addEventListener('click', ()=> window.speechSynthesis.cancel());
+})();
+</script>
 </body></html>
